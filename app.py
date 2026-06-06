@@ -5,85 +5,63 @@ import random
 app = Flask(__name__)
 CORS(app)
 
-# Real matching products database for generating rows like 1000107093_8.jpg
-PRODUCTS_MATRIX = {
-    "watches": [
-        {
-            "name": "Fire-Boltt Gladiator Smartwatch",
-            "img": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
-            "amz_p": 1499, "flp_p": 1599, "msh_p": 1349,
-            "amz_r": "4.2 ⭐", "flp_r": "4.3 ⭐", "msh_r": "4.0 ⭐",
-            "amz_d": "Tomorrow", "flp_d": "In 2 Days", "msh_d": "In 4 Days"
-        },
-        {
-            "name": "Casio Vintage Digital Watch",
-            "img": "https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=500",
-            "amz_p": 1695, "flp_p": 1715, "msh_p": 1550,
-            "amz_r": "4.5 ⭐", "flp_r": "4.4 ⭐", "msh_r": "4.1 ⭐",
-            "amz_d": "In 2 Days", "flp_d": "Tomorrow", "msh_d": "In 3 Days"
-        },
-        {
-            "name": "Fastrack Reflex Beat Band",
-            "img": "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500",
-            "amz_p": 999, "flp_p": 899, "msh_p": 799,
-            "amz_r": "3.9 ⭐", "flp_r": "4.0 ⭐", "msh_r": "3.8 ⭐",
-            "amz_d": "Tomorrow", "flp_d": "In 3 Days", "msh_d": "In 5 Days"
-        }
-    ],
-    "shoes": [
-        {
-            "name": "Air Jordan 1 Retro High",
-            "img": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
-            "amz_p": 14999, "flp_p": 14250, "msh_p": 15100,
-            "amz_r": "4.8 ⭐", "flp_r": "4.7 ⭐", "msh_r": "4.3 ⭐",
-            "amz_d": "In 3 Days", "flp_d": "In 2 Days", "msh_d": "In 6 Days"
-        },
-        {
-            "name": "Ultraboost 22 Running Shoes",
-            "img": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500",
-            "amz_p": 8999, "flp_p": 9499, "msh_p": 8500,
-            "amz_r": "4.6 ⭐", "flp_r": "4.5 ⭐", "msh_r": "4.2 ⭐",
-            "amz_d": "Tomorrow", "flp_d": "In 2 Days", "msh_d": "In 4 Days"
-        },
-        {
-            "name": "Nike Air Max Casual Sneaker",
-            "img": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500",
-            "amz_p": 4500, "flp_p": 4299, "msh_p": 3999,
-            "amz_r": "4.3 ⭐", "flp_r": "4.4 ⭐", "msh_r": "4.0 ⭐",
-            "amz_d": "In 2 Days", "flp_d": "Tomorrow", "msh_d": "In 3 Days"
-        }
-    ],
-    "shirts": [
-        {
-            "name": "Dennis Lingo Slim Fit Denim Shirt",
-            "img": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500",
-            "amz_p": 699, "flp_p": 649, "msh_p": 599,
-            "amz_r": "4.1 ⭐", "flp_r": "4.0 ⭐", "msh_r": "3.9 ⭐",
-            "amz_d": "Tomorrow", "flp_d": "In 2 Days", "msh_d": "In 3 Days"
-        },
-        {
-            "name": "Roadster Casual Checkered Shirt",
-            "img": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
-            "amz_p": 499, "flp_p": 520, "msh_p": 450,
-            "amz_r": "4.0 ⭐", "flp_r": "4.2 ⭐", "msh_r": "3.8 ⭐",
-            "amz_d": "In 2 Days", "flp_d": "Tomorrow", "msh_d": "In 4 Days"
-        }
-    ]
-}
-
 @app.route('/api/scrape', methods=['GET'])
 def scrape_products():
-    query = request.args.get('q', 'watches').lower()
+    query = request.args.get('q', 'watches').lower().strip()
     
-    # Matching category selector key logic
-    category_key = "watches"
-    if "shoe" in query: category_key = "shoes"
-    elif "shirt" in query: category_key = "shirts"
+    # Dynamic lines matching list generator (Line 1, Line 2, Line 3, Line 4)
+    results = []
     
-    # Retrieve complete array matching list of diverse design models
-    data_list = PRODUCTS_MATRIX.get(category_key, PRODUCTS_MATRIX["watches"])
-    
-    return jsonify(data_list)
+    # 4 distinct variants for different rows
+    variants = [
+        {"suffix": "Premium Stealth Edition", "price_mult": 1.2},
+        {"suffix": "Classic Retro Design", "price_mult": 0.95},
+        {"suffix": "Sport Ultra Lightweight", "price_mult": 0.75},
+        {"suffix": "Casual Multi-Color Pack", "price_mult": 0.55}
+    ]
+
+    # Keyword-based high quality public images setup to avoid broken elements
+    img_map = {
+        "bottle": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500",
+        "watch": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
+        "shoe": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+        "shirt": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500",
+        "phone": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
+        "saree": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500",
+        "glass": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500"
+    }
+
+    # Find closest match img key loop
+    selected_img = "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=500" # General global item photo
+    for key, url in img_map.items():
+        if key in query:
+            selected_img = url
+            break
+
+    # Build response format matrix rows
+    for i, var in enumerate(variants):
+        base_val = random.randint(450, 1200) * var["price_mult"]
+        p_name = f"{query.capitalize()} {var['suffix']}"
+
+        # Randomize one site availability logic conditionally to mock "Not Available" seamlessly if required
+        is_meesho_avail = True if i != 3 else False 
+
+        row_data = {
+            "name": p_name,
+            "img": selected_img,
+            "amz_p": int(base_val * 1.10),
+            "flp_p": int(base_val * 0.98),
+            "msh_p": int(base_val * 0.88) if is_meesho_avail else 0, # 0 means Not Available
+            "amz_r": f"{round(4.1 + (i*0.1), 1)} ⭐",
+            "flp_r": f"{round(4.0 + (i*0.1), 1)} ⭐",
+            "msh_r": f"{round(3.8 + (i*0.1), 1)} ⭐",
+            "amz_d": "Tomorrow",
+            "flp_d": "In 2 Days",
+            "msh_d": "In 3-5 Days"
+        }
+        results.append(row_data)
+
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
